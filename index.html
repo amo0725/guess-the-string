@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Guess the String - Slot Machine Style</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts for Fancy Text -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CodeMirror CSS for Editor -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css"
+    />
+
+    <!-- CodeMirror JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/javascript/javascript.min.js"></script>
+
+    <!-- Custom CSS -->
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+      }
+
+      /* Fancy glow animation for the output text */
+      #output {
+        white-space: pre-wrap;
+        tab-size: 4;
+      }
+
+      .pulse-animation {
+        animation: pulse 1s infinite alternate;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.7;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* Loading Spinner */
+      .spinner {
+        border: 8px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 8px solid #3498db;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen flex items-center justify-center"
+  >
+    <div
+      class="max-w-3xl w-full p-8 bg-white shadow-2xl rounded-lg text-center"
+    >
+      <h1 class="text-4xl font-bold text-gray-800 mb-8">
+        🎰 Guess the String 🎰
+      </h1>
+
+      <!-- Progress Bar -->
+      <div
+        id="progress-bar"
+        class="bg-gray-300 rounded h-6 mb-6 overflow-hidden"
+      >
+        <div
+          id="progress-bar-fill"
+          class="bg-green-500 h-6 transition-all"
+        ></div>
+      </div>
+
+      <!-- Output -->
+      <pre
+        id="output"
+        class="bg-gray-900 text-white p-4 rounded-lg whitespace-pre-wrap text-lg"
+      >
+      Loading...
+    </pre
+      >
+
+      <!-- Stats and Controls -->
+      <div class="text-center mt-6">
+        <p id="stats" class="text-gray-700 mb-4"></p>
+
+        <!-- CodeMirror Editor for custom input -->
+        <textarea
+          id="custom-input"
+          class="hidden p-3 border border-gray-300 rounded mb-4 w-full h-32 resize-none"
+        ></textarea>
+
+        <!-- Play Again Button -->
+        <button
+          id="restart-btn"
+          class="hidden px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all"
+        >
+          Play Again!
+        </button>
+
+        <!-- Customization Sliders -->
+        <div class="hidden mt-4" id="customization-options">
+          <label class="block text-left mb-2 font-semibold"
+            >Guesser Speed (ms)</label
+          >
+          <input
+            id="speed-slider"
+            type="range"
+            min="10"
+            max="500"
+            value="50"
+            class="w-full mb-4"
+          />
+          <span id="speed-value">50ms</span>
+
+          <label class="block text-left mb-2 font-semibold"
+            >Number of Guessers</label
+          >
+          <input
+            id="guessers-slider"
+            type="range"
+            min="1"
+            max="20"
+            value="10"
+            class="w-full mb-4"
+          />
+          <span id="guessers-value">10 Guessers</span>
+        </div>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div id="loading-spinner" class="spinner hidden mx-auto mt-6"></div>
+    </div>
+
+    <!-- CodeMirror Script -->
+    <script src="https://codemirror.net/lib/codemirror.js"></script>
+    <script src="https://codemirror.net/mode/javascript/javascript.js"></script>
+
+    <!-- JavaScript file -->
+    <script src="script.js"></script>
+  </body>
+</html>
