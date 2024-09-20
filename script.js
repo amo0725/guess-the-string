@@ -1,26 +1,40 @@
 let TARGET_STRING = `
-|--------------------------------------------------|
-|    Yo Bro ~ ~ ~                                  |
-|                                                  |
-|    If you can read this message successfully.    |
-|    That means the code is working fine.          |
-|    And you are so lucky to see this message XD   |
-|    I hope you like it !                          |
-|                                                  |
-|    Amo Y(^ W ^)Y                                 |
-|--------------------------------------------------|
-`; // Default target string
+┌──────────────────────────────────────────────────────────┐
+│                                                          │
+│   Welcome to the Guess String Challenge !                │
+│                                                          │
+│   If you can read this,                                  │
+|   the code is not just working,                          │
+│   it's excelling!                                        │
+│                                                          │
+│   Symbols and Unicode await you:                         │
+│                                                          │
+│   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr  |
+|   Ss Tt Uu Vv Ww Xx Yy Zz 0 1 2 3 4 5 6 7 8 9            │
+|   , . ; : ' " ! ? + - * / = < > %                        |
+|   Ω ≈ ∑ ∆ √ ∫ π ✖ ➕ ➖ ➗ ∞                           │
+│   $ € £ ¥ @ # & ^ ~ | _                                  │
+│   ( ) { } [ ] ┌ ┐ └ ┘ ─                                  │
+|                                                          │
+│                                                          │
+│   Good luck decoding this masterpiece!                   │
+│                                                          │
+│   Best Wishes,                                           │
+│   Amo                                                    │
+│                                                          │
+└──────────────────────────────────────────────────────────┘
+`;
 
 const CHARACTERS = []; // Available characters for guessing
 let result = []; // To store correct guesses
 let currentGuesses = []; // To display ongoing guesses
 let totalGuesses = 0;
 let startTime;
-let guesserSpeed = 50; // Default guesser speed (ms)
+let guesserSpeed = 150; // Default guesser speed (ms)
 let guessersPerChar = 10; // Default number of guessers per character
 let updateCounter = 0;
 const PROGRESS_BAR_LENGTH = 30; // Fixed length for progress bar
-const updateFrequency = 10; // Update UI every 10 guesses
+const updateFrequency = 20; // Numbers of guesses before updating the UI
 const progressBarFill = document.getElementById('progress-bar-fill');
 const outputElement = document.getElementById('output');
 
@@ -35,10 +49,31 @@ function initializeCharacterSet() {
     CHARACTERS.push(String.fromCharCode(48 + i)); // 0-9
   }
 
-  const punctuationMarks = [' ', ',', '.', ';', ':', "'", '"', '!', '?'];
-  const mathOperators = ['+', '-', '*', '/', '=', '<', '>', '%'];
-  const brackets = ['(', ')', '{', '}', '[', ']'];
   const currencySymbols = ['$', '€', '£', '¥'];
+  const punctuationMarks = [' ', ',', '.', ';', ':', "'", '"', '!', '?'];
+  const mathOperators = [
+    '+',
+    '-',
+    '*',
+    '/',
+    '=',
+    '<',
+    '>',
+    '%',
+    '≈',
+    '√',
+    '∫',
+    'π',
+    '∆',
+    'Ω',
+    '∑',
+    '∞',
+    '✖',
+    '➕',
+    '➖',
+    '➗',
+  ];
+  const brackets = ['(', ')', '{', '}', '[', ']', '┌', '┐', '└', '┘', '─', '│'];
   const otherSymbols = [
     '@',
     '#',
@@ -82,22 +117,16 @@ function sleep(ms) {
 // Display the current state with a fixed-length progress bar
 function displayCurrentState(forceUpdate = false) {
   updateCounter++;
-  if (!forceUpdate && updateCounter % updateFrequency !== 0) return; // Only update every 10 guesses unless forced
+  if (!forceUpdate && updateCounter % updateFrequency !== 0) return;
 
   const completedCount = result.filter((char) => char !== '').length;
   const progressPercentage = Math.round(
     (completedCount / TARGET_STRING.length) * 100
   );
-
-  // Update progress bar fill
   progressBarFill.style.width = `${progressPercentage}%`;
-
-  // Build the output: display correct guesses or current guess for each character
   const output = currentGuesses
     .map((char, index) => (result[index] !== '' ? result[index] : char))
     .join('');
-
-  // Update the output on the page
   outputElement.innerText = output;
 }
 
@@ -125,28 +154,24 @@ function getRandomCharacter() {
 // Simulate the guessing process for each character with multiple guessers
 async function guessCharacterAtIndex(index, targetChar) {
   let correctGuessFound = false;
+  const guessers = Array(guessersPerChar).fill(null);
 
   while (!correctGuessFound) {
     await Promise.all(
-      Array(guessersPerChar)
-        .fill(null)
-        .map(async () => {
-          const guess = getRandomCharacter();
-          totalGuesses++;
-
-          if (!correctGuessFound) {
-            currentGuesses[index] = guess; // Update current guesses
-            displayCurrentState(); // Refresh display
-          }
-
-          if (guess === targetChar) {
-            correctGuessFound = true;
-            result[index] = guess; // Lock the correct character
-          }
-        })
+      guessers.map(async () => {
+        const guess = getRandomCharacter();
+        totalGuesses++;
+        if (!correctGuessFound) {
+          currentGuesses[index] = guess;
+          displayCurrentState();
+        }
+        if (guess === targetChar) {
+          correctGuessFound = true;
+          result[index] = guess;
+        }
+      })
     );
-
-    await sleep(guesserSpeed); // Simulate slot machine-style guessing
+    await sleep(guesserSpeed);
   }
 }
 
@@ -185,8 +210,19 @@ async function guessAllCharacters() {
   displayStats();
 }
 
+function resetGame() {
+  result = Array(TARGET_STRING.length).fill('');
+  currentGuesses = Array(TARGET_STRING.length).fill('');
+  totalGuesses = 0;
+  startTime = Date.now();
+  updateCounter = 0; // Reset counter
+  progressBarFill.style.width = '0%'; // Reset progress bar
+  outputElement.innerText = 'Loading...'; // Reset output
+}
+
 // Initialize character set and start the guessing process
 initializeCharacterSet();
+resetGame();
 guessAllCharacters();
 
 // Handle user input for custom string and restart
@@ -195,19 +231,20 @@ document.getElementById('restart-btn').addEventListener('click', () => {
   if (customString) {
     TARGET_STRING = customString;
   }
+  resetGame();
   guessAllCharacters(); // Start again with the new string
 });
 
 // Handle slider input for speed and number of guessers
 document.getElementById('speed-slider').addEventListener('input', function () {
-  guesserSpeed = this.value;
+  guesserSpeed = parseInt(this.value, 10);
   document.getElementById('speed-value').textContent = `${guesserSpeed}ms`;
 });
 
 document
   .getElementById('guessers-slider')
   .addEventListener('input', function () {
-    guessersPerChar = this.value;
+    guessersPerChar = parseInt(this.value, 10);
     document.getElementById(
       'guessers-value'
     ).textContent = `${guessersPerChar} Guessers`;
